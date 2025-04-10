@@ -37,12 +37,14 @@ jobs:
         mkdir symbols
 
     - name: 📁 Copy binaries (exe, dll, config)
+      shell: cmd
       run: |
         copy /Y "${{ env.BIN_PATH }}*.exe" binaries\
         copy /Y "${{ env.BIN_PATH }}*.dll" binaries\
         copy /Y "${{ env.BIN_PATH }}*.config" binaries\
 
     - name: 📁 Copy PDB files
+      shell: cmd
       run: |
         copy /Y "${{ env.BIN_PATH }}*.pdb" symbols\
 
