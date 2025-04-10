@@ -1,0 +1,24 @@
+# Build results
+bin/
+obj/
+
+# Build logs
+*.tlog/
+*.log
+*.pdb
+*.tmp
+*.cache
+
+# Visual Studio specific
+.vs/
+*.suo
+*.user
+*.userosscache
+*.sln.docstates
+
+# VS Code (optional)
+.vscode/
+
+# 기타 환경별로 무시하고 싶은 항목들
+.DS_Store
+Thumbs.db
