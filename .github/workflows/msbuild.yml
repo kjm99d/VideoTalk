@@ -1,0 +1,60 @@
+name: MSBuild + GitHub Release (Split Artifacts)
+
+on:
+  push:
+    tags:
+      - 'v*'  # v1.0, v2.3.1 등 태그 push 시 트리거됨
+
+env:
+  SOLUTION_FILE_PATH: VideoTalk.sln
+  BUILD_CONFIGURATION: Release
+  PLATFORM: x64
+  BIN_PATH: bin/x64/Release/
+
+permissions:
+  contents: write  # GitHub Release 업로드 권한
+
+jobs:
+  build-and-release:
+    runs-on: windows-latest
+
+    steps:
+    - name: 📥 Checkout repository
+      uses: actions/checkout@v4
+
+    - name: 🛠 Setup MSBuild
+      uses: microsoft/setup-msbuild@v1.0.2
+
+    - name: 📦 Restore NuGet packages
+      run: nuget restore "${{ env.SOLUTION_FILE_PATH }}"
+
+    - name: 🏗 Build solution (x64 Release)
+      run: msbuild "${{ env.SOLUTION_FILE_PATH }}" /p:Configuration=${{ env.BUILD_CONFIGURATION }} /p:Platform=${{ env.PLATFORM }}
+
+    - name: 📂 Create output folders
+      run: |
+        mkdir binaries
+        mkdir symbols
+
+    - name: 📁 Copy binaries (exe, dll, config)
+      run: |
+        copy /Y "${{ env.BIN_PATH }}*.exe" binaries\
+        copy /Y "${{ env.BIN_PATH }}*.dll" binaries\
+        copy /Y "${{ env.BIN_PATH }}*.config" binaries\
+
+    - name: 📁 Copy PDB files
+      run: |
+        copy /Y "${{ env.BIN_PATH }}*.pdb" symbols\
+
+    - name: 📦 Zip binaries
+      run: Compress-Archive -Path "binaries\\*" -DestinationPath release-binaries.zip
+
+    - name: 📦 Zip symbols
+      run: Compress-Archive -Path "symbols\\*" -DestinationPath release-symbols.zip
+
+    - name: 🚀 Upload to GitHub Release
+      uses: softprops/action-gh-release@v1
+      with:
+        files: |
+          release-binaries.zip
+          release-symbols.zip
