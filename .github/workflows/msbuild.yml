@@ -9,7 +9,7 @@ env:
   SOLUTION_FILE_PATH: VideoTalk.sln
   BUILD_CONFIGURATION: Release
   PLATFORM: x64
-  BIN_PATH: bin/x64/Release/
+  BIN_PATH: bin\x64\Release\
 
 permissions:
   contents: write  # GitHub Release 업로드 권한
