@@ -39,9 +39,9 @@ jobs:
     - name: 📁 Copy binaries (exe, dll, config)
       shell: cmd
       run: |
-        copy /Y "${{ env.BIN_PATH }}*.exe" binaries\
-        copy /Y "${{ env.BIN_PATH }}*.dll" binaries\
-        copy /Y "${{ env.BIN_PATH }}*.config" binaries\
+        copy /Y "${{ env.BIN_PATH }}*.exe" binaries\ || echo no exe copied
+        copy /Y "${{ env.BIN_PATH }}*.dll" binaries\ || echo no dll copied
+        copy /Y "${{ env.BIN_PATH }}*.config" binaries\ || echo no config copied
 
     - name: 📁 Copy PDB files
       shell: cmd
