@@ -8,14 +8,13 @@
 #include <functional>
 #include <vector>
 
-#include "Candidate.h"
-
 #pragma comment(lib, "libNetwork.lib")
 #include "libNetwork.h"
 
 #pragma comment(lib, "ws2_32.lib")
 
 #include "P2PConnection.h"
+#include "CandidateUtils.h"
 
 #define SERVER_IP "127.0.0.1"
 #define SERVER_PORT 5000
