@@ -43,7 +43,9 @@ int main()
     int nPublicPort = 0;
     GetPublicNetwork(szPublicIP, 32, &nPublicPort, szRemoteAddr, 32, nRemotePort);
 
-    
+    char szLocalIP[32] = { 0, };
+    GetLocalNetwork(szLocalIP, _countof(szLocalIP));
+
     // ==================================================================================================== // 
     // 2. Signaling 서버로 ICE Candidate 정보를 전달한다.
     
@@ -81,10 +83,13 @@ int main()
 
     P2PConnection conn;
     // 2-1. STUN 서버에서 받은 정보를 기반으로 ICE Candidate 생성
-    // std::string candidate = GenerateCandidate("udp", szPublicIP, nPublicPort, "srflx");
-    std::string candidate = GenerateCandidate("udp", "192.168.0.9", conn.GetPort(), "host");
+    std::vector<Candidate> myCandidates = {
+    ParseCandidate(GenerateCandidate("udp", szLocalIP, conn.GetPort(), "host")),
+    ParseCandidate(GenerateCandidate("udp", szPublicIP, nPublicPort, "srflx"))
+    };
 
     // 현재 Peer의 ICE 정보 전송
+    std::string candidate = SerializeCandidateList(myCandidates);
     send(sock, candidate.c_str(), static_cast<int>(candidate.size()), 0);
 
 
