@@ -21,12 +21,15 @@
     <ClCompile Include="P2PConnection.cpp">
       <Filter>소스 파일</Filter>
     </ClCompile>
+    <ClCompile Include="CandidateUtils.cpp">
+      <Filter>소스 파일</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="P2PConnection.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
-    <ClInclude Include="Candidate.h">
+    <ClInclude Include="CandidateUtils.h">
       <Filter>헤더 파일</Filter>
     </ClInclude>
   </ItemGroup>

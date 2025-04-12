@@ -151,11 +151,12 @@
     </Link>
   </ItemDefinitionGroup>
   <ItemGroup>
+    <ClCompile Include="CandidateUtils.cpp" />
     <ClCompile Include="P2PConnection.cpp" />
     <ClCompile Include="SignalingClient.cpp" />
   </ItemGroup>
   <ItemGroup>
-    <ClInclude Include="Candidate.h" />
+    <ClInclude Include="CandidateUtils.h" />
     <ClInclude Include="P2PConnection.h" />
   </ItemGroup>
   <Import Project="$(VCTargetsPath)\Microsoft.Cpp.targets" />

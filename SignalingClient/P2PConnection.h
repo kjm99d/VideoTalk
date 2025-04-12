@@ -1,5 +1,5 @@
 #pragma once
-#include "Candidate.h"
+#include "CandidateUtils.h"
 
 #include <winsock2.h>
 #include <string>
