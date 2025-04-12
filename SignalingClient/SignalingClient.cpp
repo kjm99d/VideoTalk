@@ -22,8 +22,8 @@
 
 Candidate ParseCandidate(const std::string& candidateStr);
 std::string GenerateCandidate(const std::string& transport,   // "udp" or "tcp"
-                            const std::string& ip,          // ¿¹: "203.0.113.1"
-                            uint16_t port,                  // ¿¹: 54321
+                            const std::string& ip,          // ì˜ˆ: "203.0.113.1"
+                            uint16_t port,                  // ì˜ˆ: 54321
                             const std::string& type         // "host", "srflx", "relay"
 );
 
@@ -32,37 +32,37 @@ int main()
     
 
     // ==================================================================================================== //  
-    // µµ¸ŞÀÎÀ» »ç¿ëÇÏ¿© STUN ¼­¹öÀÇ Remote IP Á¤º¸¸¦ ¼öÁıÇÑ´Ù.
+    // ë„ë©”ì¸ì„ ì‚¬ìš©í•˜ì—¬ STUN ì„œë²„ì˜ Remote IP ì •ë³´ë¥¼ ìˆ˜ì§‘í•œë‹¤.
     char szRemoteAddr[32] = { 0, };
     const int nRemotePort = 19302;
     ResolveDomainToSockAddr("stun.l.google.com", nRemotePort, szRemoteAddr, 32);
     
     
     // ==================================================================================================== //  
-    // 1. STUN ¼­¹ö¸¦ ÅëÇØ P2P ¿¬°áÀ» À§ÇÑ Peer ÀÇ Public IP/PORT Á¤º¸¸¦ È¹µæÇÑ´Ù.
+    // 1. STUN ì„œë²„ë¥¼ í†µí•´ P2P ì—°ê²°ì„ ìœ„í•œ Peer ì˜ Public IP/PORT ì •ë³´ë¥¼ íšë“í•œë‹¤.
     char szPublicIP[32] = { 0, };
     int nPublicPort = 0;
     GetPublicNetwork(szPublicIP, 32, &nPublicPort, szRemoteAddr, 32, nRemotePort);
 
     
     // ==================================================================================================== // 
-    // 2. Signaling ¼­¹ö·Î ICE Candidate Á¤º¸¸¦ Àü´ŞÇÑ´Ù.
+    // 2. Signaling ì„œë²„ë¡œ ICE Candidate ì •ë³´ë¥¼ ì „ë‹¬í•œë‹¤.
     
     
     
     
-    // 2-2. ½Ã±×³Î¸µ ¼­¹ö·Î ICE Á¤º¸ Àü´Ş
+    // 2-2. ì‹œê·¸ë„ë§ ì„œë²„ë¡œ ICE ì •ë³´ ì „ë‹¬
     WSADATA wsaData;
     SOCKET sock = INVALID_SOCKET;
 
     if (WSAStartup(MAKEWORD(2, 2), &wsaData) != 0) {
-        std::cerr << "WSAStartup ½ÇÆĞ" << std::endl;
+        std::cerr << "WSAStartup ì‹¤íŒ¨" << std::endl;
         return 1;
     }
 
-    sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP); // ½Ã±×³Î¸µ ¼­¹ö´Â TCP ·Î ¿¬°áÇÑ´Ù.
+    sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP); // ì‹œê·¸ë„ë§ ì„œë²„ëŠ” TCP ë¡œ ì—°ê²°í•œë‹¤.
     if (sock == INVALID_SOCKET) {
-        std::cerr << "¼ÒÄÏ »ı¼º ½ÇÆĞ" << std::endl;
+        std::cerr << "ì†Œì¼“ ìƒì„± ì‹¤íŒ¨" << std::endl;
         WSACleanup();
         return 1;
     }
@@ -73,7 +73,7 @@ int main()
     inet_pton(AF_INET, SERVER_IP, &serverAddr.sin_addr);
 
     if (connect(sock, (sockaddr*)&serverAddr, sizeof(serverAddr)) == SOCKET_ERROR) {
-        std::cerr << "¼­¹ö ¿¬°á ½ÇÆĞ" << std::endl;
+        std::cerr << "ì„œë²„ ì—°ê²° ì‹¤íŒ¨" << std::endl;
         closesocket(sock);
         WSACleanup();
         return 1;
@@ -81,50 +81,50 @@ int main()
 
 
     P2PConnection conn;
-    // 2-1. STUN ¼­¹ö¿¡¼­ ¹ŞÀº Á¤º¸¸¦ ±â¹İÀ¸·Î ICE Candidate »ı¼º
+    // 2-1. STUN ì„œë²„ì—ì„œ ë°›ì€ ì •ë³´ë¥¼ ê¸°ë°˜ìœ¼ë¡œ ICE Candidate ìƒì„±
     // std::string candidate = GenerateCandidate("udp", szPublicIP, nPublicPort, "srflx");
     std::string candidate = GenerateCandidate("udp", "192.168.0.9", conn.GetPort(), "host");
 
-    // ÇöÀç PeerÀÇ ICE Á¤º¸ Àü¼Û
+    // í˜„ì¬ Peerì˜ ICE ì •ë³´ ì „ì†¡
     send(sock, candidate.c_str(), static_cast<int>(candidate.size()), 0);
 
 
     // ==================================================================================================== // 
-    // 3. ICE Candidate Á¤º¸¸¦ È¹µæÇÑ´Ù.
+    // 3. ICE Candidate ì •ë³´ë¥¼ íšë“í•œë‹¤.
 
-    // 3-1. »ó´ë ICE Á¤º¸ ¼ö½Å
+    // 3-1. ìƒëŒ€ ICE ì •ë³´ ìˆ˜ì‹ 
     char buffer[2048] = { 0 };
     int recvLen = recv(sock, buffer, sizeof(buffer) - 1, 0);
     if (recvLen > 0) 
     {
         std::string peerIce(buffer, recvLen);
-        std::cout << "\n[+] »ó´ë ICE Á¤º¸ ¼ö½ÅµÊ:\n" << peerIce << std::endl;
+        std::cout << "\n[+] ìƒëŒ€ ICE ì •ë³´ ìˆ˜ì‹ ë¨:\n" << peerIce << std::endl;
         
         // ==================================================================================================== // 
-        // 4. »ó´ë Peer ÀÇ ICE Á¤º¸¸¦ ±â¹İÀ¸·Î ÆÄ½ÌÇÑ´Ù.
+        // 4. ìƒëŒ€ Peer ì˜ ICE ì •ë³´ë¥¼ ê¸°ë°˜ìœ¼ë¡œ íŒŒì‹±í•œë‹¤.
         Candidate peerCandidate = ParseCandidate(peerIce);
 
         // ==================================================================================================== // 
-        // 5. »ó´ë Peer ÀÇ ICE Á¤º¸¸¦ ±â¹İÀ¸·Î P2P ¿¬°á ½Ãµµ¸¦ ÇÑ´Ù.
+        // 5. ìƒëŒ€ Peer ì˜ ICE ì •ë³´ë¥¼ ê¸°ë°˜ìœ¼ë¡œ P2P ì—°ê²° ì‹œë„ë¥¼ í•œë‹¤.
         //P2PConnection conn;
         conn.Connect(peerCandidate);
 
 
-        // ÃÊ±â°ª ¼³Á¤ ÆĞÅ¶ Àü¼Û
-        // Roll Conflict ¹æÁö¸¦ À§ÇÑ tieBrocker Á¤º¸ ( ÃßÈÄ¿¡ °³¼±ÇÒ °Í )
+        // ì´ˆê¸°ê°’ ì„¤ì • íŒ¨í‚· ì „ì†¡
+        // Roll Conflict ë°©ì§€ë¥¼ ìœ„í•œ tieBrocker ì •ë³´ ( ì¶”í›„ì— ê°œì„ í•  ê²ƒ )
 
 
         // ==================================================================================================== // 
-        // 6. µğ¹ÙÀÌ½º Àåºñ¸¦ ÅëÇØ °¡Á®¿Â ¿µ»ó Á¤º¸¸¦ P2P ¿¬°á »ó´ë¿¡°Ô ¼Û/¼ö½ÅÇÑ´Ù.
+        // 6. ë””ë°”ì´ìŠ¤ ì¥ë¹„ë¥¼ í†µí•´ ê°€ì ¸ì˜¨ ì˜ìƒ ì •ë³´ë¥¼ P2P ì—°ê²° ìƒëŒ€ì—ê²Œ ì†¡/ìˆ˜ì‹ í•œë‹¤.
 
-        // 7. ÇÁ·Î±×·¥ Á¾·á ¹æÁö
+        // 7. í”„ë¡œê·¸ë¨ ì¢…ë£Œ ë°©ì§€
         while (true) {
             std::this_thread::sleep_for(std::chrono::seconds(1));
         }
     }
     else
     {
-        std::cerr << "»ó´ë ICE Á¤º¸ ¼ö½Å ½ÇÆĞ" << std::endl;
+        std::cerr << "ìƒëŒ€ ICE ì •ë³´ ìˆ˜ì‹  ì‹¤íŒ¨" << std::endl;
     }
 
 
@@ -138,21 +138,21 @@ int main()
 std::string GenerateCandidate(const std::string& transport, const std::string& ip, uint16_t port, const std::string& type)
 {
 
-    // ¿ì¼±¼øÀ§ °è»ê¿ë »ó¼ö
+    // ìš°ì„ ìˆœìœ„ ê³„ì‚°ìš© ìƒìˆ˜
     const int TYPE_PREF_SRFLX = 100;
     const int TYPE_PREF_HOST = 126;
     const int TYPE_PREF_RELAY = 0;
 
-    // ¿ì¼±¼øÀ§ °è»ê °ø½Ä
+    // ìš°ì„ ìˆœìœ„ ê³„ì‚° ê³µì‹
     std::function<uint32_t(int, int, int)> calculatePriority =
         [](int typePref, int localPref, int componentID) {
         return (typePref << 24) + (localPref << 8) + (256 - componentID);
         };
 
 
-    // foundationÀº °£´ÜÈ÷ ³­¼ö·Î Ã³¸®ÇÏ°Å³ª °íÁ¤°ª »ç¿ë
+    // foundationì€ ê°„ë‹¨íˆ ë‚œìˆ˜ë¡œ ì²˜ë¦¬í•˜ê±°ë‚˜ ê³ ì •ê°’ ì‚¬ìš©
     std::string foundation = "123456789";
-    int componentID = 1; // ÀÏ¹İÀûÀ¸·Î 1: RTP
+    int componentID = 1; // ì¼ë°˜ì ìœ¼ë¡œ 1: RTP
     int typePref;
 
     if (type == "host")      typePref = TYPE_PREF_HOST;
@@ -198,7 +198,7 @@ Candidate ParseCandidate(const std::string& candidateStr) {
     cand.ip = tokens[4];
     cand.port = static_cast<uint16_t>(std::stoi(tokens[5]));
 
-    // typ ´Â °íÁ¤ÀûÀ¸·Î "typ" µÚ¿¡ À§Ä¡ÇÏ¹Ç·Î À§Ä¡ º¸ÀåµÊ
+    // typ ëŠ” ê³ ì •ì ìœ¼ë¡œ "typ" ë’¤ì— ìœ„ì¹˜í•˜ë¯€ë¡œ ìœ„ì¹˜ ë³´ì¥ë¨
     if (tokens[6] != "typ") {
         throw std::runtime_error("Invalid candidate format: missing 'typ'");
     }
