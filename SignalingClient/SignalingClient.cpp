@@ -106,12 +106,21 @@ int main()
         
         // ==================================================================================================== // 
         // 4. 상대 Peer 의 ICE 정보를 기반으로 파싱한다.
-        Candidate peerCandidate = ParseCandidate(peerIce);
+        std::vector<Candidate> peerCandidateList = DeserializeCandidateList(peerIce);
 
         // ==================================================================================================== // 
         // 5. 상대 Peer 의 ICE 정보를 기반으로 P2P 연결 시도를 한다.
         //P2PConnection conn;
-        conn.Connect(peerCandidate);
+        for (Candidate& peerCandidate : peerCandidateList)
+        {
+            const bool bStatus = conn.Connect(peerCandidate);
+            std::cout << "Connect Status " << (bStatus ? "[SUCCESS]" : "[FAILED]") << " " << SerializeCandidate(peerCandidate) << std::endl;
+            if (bStatus)
+            {
+                break;
+            }
+
+        }
 
 
         // 초기값 설정 패킷 전송
@@ -122,7 +131,8 @@ int main()
         // 6. 디바이스 장비를 통해 가져온 영상 정보를 P2P 연결 상대에게 송/수신한다.
 
         // 7. 프로그램 종료 방지
-        while (true) {
+        while (true) 
+        {
             std::this_thread::sleep_for(std::chrono::seconds(1));
         }
     }
